@@ -1,5 +1,9 @@
+begin
 require "codeclimate-test-reporter"
 CodeClimate::TestReporter.start
+rescue Exception => e
+    p e
+end
 require 'test/unit'
 require 'prysless'
 Pry.config.input = StringIO.new("exit\n")
