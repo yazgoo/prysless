@@ -24,14 +24,16 @@ module Prysless
 private
         def shell() binding.pry end
         def var name
-            value = ENV[name]
+            value = ENV["PRYSLESS_#{name}"]
             value = if value == nil then [] else value.split(":") end
             value.each { |p| yield p }
         end
         def load_objects
             @a = {}
-            var('PRYSLESS_LIBRARY_PATH') { |p| $LOAD_PATH << p }
-            var('PRYSLESS_REQUIRE') do |p|
+            @aliases = {}
+            var('ALIASES') { |a| k, v = a.split('=', 2); @aliases[k] = v }
+            var('LIBRARY_PATH') { |p| $LOAD_PATH << p }
+            var('REQUIRE') do |p|
                 name , value = p.split("=", 2)
                 gem, object = value.split("/", 2)
                 require gem
@@ -52,10 +54,11 @@ private
         #    
         # Return the declared variable from PRYSLESS_REQUIRE or calls super
         def method_missing method, *params, &block
-            if @a[method.to_s]
-                @a[method.to_s]
+            meth = method.to_s
+            if @a[meth] then @a[meth]
             else
-                super
+                meth = @aliases[meth] if @aliases[meth]
+                `#{([meth] + params).join " "}`.split("\n")
             end
         end
     end
