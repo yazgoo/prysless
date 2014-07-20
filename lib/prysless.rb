@@ -38,6 +38,19 @@ private
                 @a[name] = eval(object.gsub("/", "::"))
             end
         end
+        # Internal: try and find user defined variable named with the method
+        #   if its result is nil, super
+        #
+        # Examples
+        #
+        #  h
+        #  NameError: undefined local variable or method `h' for #<Prysless::Shell:0x000000019f1c20>
+        #  from .../lib/prysless.rb:45:in `method_missing'
+        #
+        #  a # with PRYSLESS_REQUIRE="a=pry/[]"
+        #  => []
+        #    
+        # Return the declared variable from PRYSLESS_REQUIRE or calls super
         def method_missing method, *params, &block
             if @a[method.to_s]
                 @a[method.to_s]
