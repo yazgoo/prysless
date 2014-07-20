@@ -1,12 +1,8 @@
 language: ruby
 rvm:
   - 2.1.0
-  - jruby-18mode
   - jruby-19mode
-  - rbx-2
-  - ruby-head
   - jruby-head
-  - ree
 addons:
   code_climate:
     repo_token: a0bad1b5b8fed6d2f3ffa18f210320600aa8b37d97fa3cda0187a0f602c0af0b
