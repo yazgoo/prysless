@@ -16,7 +16,7 @@ class PryslessTest < Test::Unit::TestCase
         rescue Exception => e
             x = e
         end
-        assert_not_nil e
+        assert e != nil
     end
 end
 
