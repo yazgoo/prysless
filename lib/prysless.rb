@@ -29,10 +29,12 @@ module Prysless
             @store = PStore.new("#{configuration_directory}/prysless.pstore")
         end
         # Public: saves data to the store
+        # key   - the name of the key to store
+        # value - the value associated with the key
         #
         # Examples
         #
-        #   self['lol'] = 'test'
+        #   []= 'lol', 'test'
         #       => 'test'
         #  
         # Return the data that was saved
@@ -40,10 +42,11 @@ module Prysless
             @store.transaction { @store[key] = value }
         end
         # Public: reads data from the store
+        # key - the value of the key to retrieve
         #
         # Examples
         #
-        #   self['lol'] = 'test'
+        #   []= 'lol'
         #       => 'test'
         #  
         # Return the data that was saved
