@@ -78,6 +78,7 @@ end
     # Public: Pry shell allowing to use user defined objects, based on two variables:
     #   * PRYSLESS_LIBRARY_PATH: path to load additional libraries, ":"-separated
     #   * PRYSLESS_REQUIRE: variable definitions
+    #   * PRYSLESS_ALIASES: shell command aliases
     #
     # Examples
     #
