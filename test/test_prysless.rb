@@ -17,5 +17,16 @@ class PryslessTest < Test::Unit::TestCase
             x = e
         end
     end
+    def test_store
+        Dir.mktmpdir do |dir|
+            ENV['HOME'] = dir
+            s = Prysless::Store.new
+            s['lol'] = 'lil'
+            assert s['lol'] == 'lil'
+            s.test = 'blah'
+            assert s.test == 'blah'
+            assert s.test == s['test']
+        end
+    end
 end
 

@@ -1,11 +1,75 @@
 require "prysless/version"
 require 'pry'
+require 'pstore'
+require 'fileutils'
 # Public: Utilities to make ruby object accessible via pry
 #
 # Examples
 #
 #   Prysless::Shell.new
 module Prysless
+    # Public: Pry store allowing to pass and persist data between sessions
+    #   Data can be accessed either via hash notation or metheod notation
+    #   This is a core functionality of prysless since we want to be able
+    #   to share states with other processes (namely: the shell) without
+    #   copy/paste.
+    #
+    # Examples
+    #
+    #   Store.new['lol'] = 'test'
+    #   Store.new['lol]
+    #       => 'test'
+    #   Store.new.lil = 'blah'
+    #   Store.new.lil
+    #       => 'blah'
+    class Store
+        def initialize
+            configuration_directory = "#{ENV['HOME']}/.config"
+            FileUtils.mkdir_p configuration_directory
+            @store = PStore.new("#{configuration_directory}/prysless.pstore")
+        end
+        # Public: saves data to the store
+        #
+        # Examples
+        #
+        #   self['lol'] = 'test'
+        #       => 'test'
+        #  
+        # Return the data that was saved
+        def []= key, value
+            @store.transaction { @store[key] = value }
+        end
+        # Public: reads data from the store
+        #
+        # Examples
+        #
+        #   self['lol'] = 'test'
+        #       => 'test'
+        #  
+        # Return the data that was saved
+        def [] key
+            @store.transaction { @store[key] }
+        end
+private
+# Internal: either writes or read data to/from the store
+#
+# Examples
+#
+#   method_missing :blah=, ['test'] # writes data
+#       => 'test'
+#   method_missing :blah # reads data
+#       => 'test'
+#  
+# Return the data that was saved or read
+def method_missing method, *params, &block
+    method = method.to_s
+    if method[-1..-1] == '='
+        self[method[0..-2]] = params[0]
+    else
+        self[method]
+    end
+end
+    end
     # Public: Pry shell allowing to use user defined objects, based on two variables:
     #   * PRYSLESS_LIBRARY_PATH: path to load additional libraries, ":"-separated
     #   * PRYSLESS_REQUIRE: variable definitions
@@ -21,7 +85,7 @@ module Prysless
             load_objects
             shell
         end
-private
+        private
         def shell() binding.pry end
         def var name
             value = ENV["PRYSLESS_#{name}"]
@@ -39,6 +103,7 @@ private
                 require gem
                 @a[name] = eval(object.gsub("/", "::"))
             end
+            @a['s'] = Store.new
         end
         # Internal: try and find user defined variable named with the method
         #   if its result is nil, super
