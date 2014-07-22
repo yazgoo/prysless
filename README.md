@@ -50,7 +50,7 @@ Will load into the variable named e Ec2l::Client.new after requiring 'ec2l'.
 Because I use the development version of ec2l and not the gem directly,
 I added my ec2l development library directory to PRYSLESS\_LIBRARY\_PATH.
 
-Also, I like to add an aliase to prysless\_store command:
+Also, I like to add an alias to prysless\_store command:
 
     alias p=prysless_store
 
