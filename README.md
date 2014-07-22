@@ -7,7 +7,8 @@
 [![Gem Version](https://badge.fury.io/rb/prysless.svg)](http://badge.fury.io/rb/prysless)
 
 prysless aims to integrate ruby programs in terminal sessions with lowest harm.
-It is based pry REPL, hence the name.
+
+It is based on pry REPL, hence the name.
 
 ## Installation
 
@@ -28,9 +29,9 @@ Or install it yourself as:
 All the configuring is done via environment variables,
 so to me it adds up to editing my bashrc
 
-    *  PRYSLESS\_LIBRARY\_PATH: path to load additional libraries, ":"-separated
-    *  PRYSLESS\_REQUIRE: variable definitions
-    *  PRYSLESS\_ALIASES: shell command aliases
+*  PRYSLESS\_LIBRARY\_PATH: path to load additional libraries, ":"-separated
+*  PRYSLESS\_REQUIRE: variable definitions
+*  PRYSLESS\_ALIASES: shell command aliases
 
 For example:
 
@@ -38,14 +39,16 @@ For example:
     export PRYSLESS_LIBRARY_PATH="$HOME/dev/ec2l/lib"
     export PRYSLESS_REQUIRE="e=ec2l/Ec2l/Client.new:a=pry/[]"
 
-PRYSLESS\_REQUIRE tells prysless what objects to preload and how to name them
+PRYSLESS\_REQUIRE tells prysless what objects to preload and how to name them.
+
 So, for example:
 
     e=ec2l/Ec2l/Client.new
 
-Will load into the variable named e Ec2l::Client.new after requiring 'ec2l'
+Will load into the variable named e Ec2l::Client.new after requiring 'ec2l'.
+
 Because I use the development version of ec2l and not the gem directly,
-I added my ec2l development library directory to PRYSLESS\_LIBRARY\_PATH
+I added my ec2l development library directory to PRYSLESS\_LIBRARY\_PATH.
 
 Also, I like to add an aliases to prysless\_store command:
 
