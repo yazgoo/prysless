@@ -2,6 +2,7 @@ require "prysless/version"
 require 'pry'
 require 'pstore'
 require 'fileutils'
+require 'net/ssh'
 # Public: Utilities to make ruby object accessible via pry
 #
 # Examples
@@ -130,6 +131,41 @@ end
             else
                 meth = @aliases[meth] if @aliases[meth]
                 `#{([meth] + params).join " "}`.split("\n")
+            end
+        end
+        def remote_shell args
+            remote(args) do |ssh|
+                command = true
+                while command
+                    print "> "
+                    command = gets
+                    if command
+                        result = ssh.exec! command
+                        puts result.split("\n").awesome_inspect if not result.nil?
+                    end
+                end
+                ssh.exec! "exit"
+            end
+        end
+        def remote args
+            args[:user] = 'root' if not args[:user]
+            args[:keys] = Dir["#{ENV['HOME']}/.ssh/*.pem"]
+            p args
+            Net::SSH.start args.delete(:host), 
+                args.delete(:user), args do |ssh|
+                puts "connected"
+                yield ssh
+            end
+        end
+        def remote_debug args
+            require 'pry-remote'
+            remote(args) do |ssh|
+                ssh.forward.local 9876, '127.0.0.1', 9876
+                ssh.forward.remote 9877, '127.0.0.1', 9877
+                debugging = true
+                Thread.new { ssh.loop { debugging } }
+                PryRemote::CLI.new(['-P', '9877']).run
+                debugging = false
             end
         end
     end

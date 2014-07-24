@@ -22,4 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
 
   spec.add_runtime_dependency "pry"
+  spec.add_runtime_dependency "pry-remote"
+  spec.add_runtime_dependency "net-ssh"
 end
