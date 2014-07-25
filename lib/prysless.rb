@@ -92,6 +92,16 @@ end
             load_objects
             shell
         end
+        # Public: opens a remote secure shell (via SSH) to an host
+        #
+        # args - hash with arguments for the connection, see romote
+        #
+        # Examples
+        #
+        #   remote_shell '10.0.0.1'
+        #       > pwd
+        #       ["/root"]
+        #
         def remote_shell args
             remote(args) do |ssh|
                 command = true
@@ -106,6 +116,10 @@ end
                 ssh.exec! "exit"
             end
         end
+        # Public: opens a remote-pry debugging session over SSH
+        #
+        # args - hash with arguments for the connection, see romote
+        #
         def remote_debug args
             require 'pry-remote'
             remote(args) do |ssh|
