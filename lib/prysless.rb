@@ -92,6 +92,31 @@ end
             load_objects
             shell
         end
+        def remote_shell args
+            remote(args) do |ssh|
+                command = true
+                while command
+                    print "> "
+                    command = gets
+                    if command
+                        result = ssh.exec! command
+                        puts result.split("\n").awesome_inspect if not result.nil?
+                    end
+                end
+                ssh.exec! "exit"
+            end
+        end
+        def remote_debug args
+            require 'pry-remote'
+            remote(args) do |ssh|
+                ssh.forward.local 9876, '127.0.0.1', 9876
+                ssh.forward.remote 9877, '127.0.0.1', 9877
+                debugging = true
+                Thread.new { ssh.loop { debugging } }
+                PryRemote::CLI.new(['-P', '9877']).run
+                debugging = false
+            end
+        end
         private
         def shell() binding.pry end
         def var name
@@ -133,20 +158,6 @@ end
                 `#{([meth] + params).join " "}`.split("\n")
             end
         end
-        def remote_shell args
-            remote(args) do |ssh|
-                command = true
-                while command
-                    print "> "
-                    command = gets
-                    if command
-                        result = ssh.exec! command
-                        puts result.split("\n").awesome_inspect if not result.nil?
-                    end
-                end
-                ssh.exec! "exit"
-            end
-        end
         def remote args
             args[:user] = 'root' if not args[:user]
             args[:keys] = Dir["#{ENV['HOME']}/.ssh/*.pem"]
@@ -155,17 +166,6 @@ end
                 args.delete(:user), args do |ssh|
                 puts "connected"
                 yield ssh
-            end
-        end
-        def remote_debug args
-            require 'pry-remote'
-            remote(args) do |ssh|
-                ssh.forward.local 9876, '127.0.0.1', 9876
-                ssh.forward.remote 9877, '127.0.0.1', 9877
-                debugging = true
-                Thread.new { ssh.loop { debugging } }
-                PryRemote::CLI.new(['-P', '9877']).run
-                debugging = false
             end
         end
     end

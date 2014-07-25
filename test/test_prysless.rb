@@ -1,8 +1,9 @@
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
 require 'test/unit'
 require 'prysless'
 Pry.config.input = StringIO.new("exit\n")
+class FakeSSH
+    def exec!(string) end
+end
 class PryslessTest < Test::Unit::TestCase
     def test_run
         ENV['PRYSLESS_LIBRARY_PATH'] = "/tmp:/"
@@ -27,6 +28,14 @@ class PryslessTest < Test::Unit::TestCase
             assert s.test == 'blah'
             assert s.test == s['test']
         end
+    end
+    def test_remote
+        shell = Prysless::Shell.new
+        args = {}
+        shell.remote(args)
+        def shell.remote(args) FakeSSH.new end
+        shell.remote_shell(args)
+        shell.remote_debug(args)
     end
 end
 
